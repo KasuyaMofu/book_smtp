@@ -1,0 +1,62 @@
+services:
+  dns:
+    container_name: dns
+    build:
+      context: ./dns
+    networks:
+      dns:
+        ipv4_address: 10.100.2.254
+
+  client:
+    container_name: client
+    dns: 10.100.2.254
+    build:
+      context: ./client
+    networks:
+      dns:
+        ipv4_address: 10.100.2.5
+
+  smtp-receive:
+    container_name: smtp-receive
+    dns: 10.100.2.254  
+    build:
+      context: ./mail-server
+    networks:
+      dns:
+        ipv4_address: 10.100.2.20
+      smtp:
+        ipv4_address: 10.100.4.20       
+    ports:
+      - "0.0.0.0:10143:143"
+
+  smtp-relay-plain:
+    container_name: smtp-relay-plain
+    dns: 10.100.2.254
+    build:
+      context: ./smtp-relay-plain
+    networks:
+      dns:
+        ipv4_address: 10.100.2.50
+      smtp:
+        ipv4_address: 10.100.4.50
+    ports:
+      - "0.0.0.0:10025:25"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "blocking"
+        tag: "smtp-relay-plain"
+
+networks:
+  dns:
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 10.100.2.0/24
+  smtp:
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 10.100.4.0/24
