@@ -4,59 +4,82 @@ services:
     build:
       context: ./dns
     networks:
-      dns:
+      localnet:
         ipv4_address: 10.100.2.254
 
-  client:
-    container_name: client
+  a-client:
+    container_name: a-client
     dns: 10.100.2.254
     build:
-      context: ./client
+      context: ./a-client
     networks:
-      dns:
+      localnet:
         ipv4_address: 10.100.2.5
-
-  smtp-receive:
-    container_name: smtp-receive
-    dns: 10.100.2.254  
-    build:
-      context: ./mail-server
-    networks:
-      dns:
-        ipv4_address: 10.100.2.20
-      smtp:
-        ipv4_address: 10.100.4.20       
-    ports:
-      - "0.0.0.0:10143:143"
-
-  smtp-relay-plain:
-    container_name: smtp-relay-plain
+  
+  a-smtp-plain:
+    container_name: a-smtp-plain
     dns: 10.100.2.254
     build:
-      context: ./smtp-relay-plain
+      context: ./a-smtp-plain
     networks:
-      dns:
+      localnet:
         ipv4_address: 10.100.2.50
-      smtp:
-        ipv4_address: 10.100.4.50
     ports:
       - "0.0.0.0:10025:25"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-        mode: "blocking"
-        tag: "smtp-relay-plain"
+
+  a-smtp-dkim:
+    container_name: a-smtp-dkim
+    dns: 10.100.2.254
+    build:
+      context: ./a-smtp-dkim
+    networks:
+      localnet:
+        ipv4_address: 10.100.2.60
+    ports:
+      - "0.0.0.0:11025:25"
+
+  b-mx:
+    container_name: b-mx
+    dns: 10.100.2.254
+    build:
+      context: ./b-mx
+    networks:
+      localnet:
+        ipv4_address: 10.100.2.70
+
+  b-mx-spf:
+    container_name: b-mx-spf
+    dns: 10.100.2.254
+    build:
+      context: ./b-mx-spf
+    networks:
+      localnet:
+        ipv4_address: 10.100.2.71
+
+  b-mx-spf-dkim:
+    container_name: b-mx-spf-dkim
+    dns: 10.100.2.254
+    build:
+      context: ./b-mx-spf-dkim
+    networks:
+      localnet:
+        ipv4_address: 10.100.2.72
+
+  b-imap:
+    container_name: b-imap
+    dns: 10.100.2.254  
+    build:
+      context: ./b-imap
+    networks:
+      localnet:
+        ipv4_address: 10.100.2.20  
+    ports:
+      - "0.0.0.0:20143:143"
+
 
 networks:
-  dns:
+  localnet:
     enable_ipv6: false
     ipam:
       config:
         - subnet: 10.100.2.0/24
-  smtp:
-    enable_ipv6: false
-    ipam:
-      config:
-        - subnet: 10.100.4.0/24

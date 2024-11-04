@@ -1,0 +1,15 @@
+FROM smtp-book-postfix:latest
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    postfix-policyd-spf-python && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN sed -i -E "/(HELO_reject|Mail_From_reject)/d" /etc/postfix-policyd-spf-python/policyd-spf.conf && \
+    echo "HELO_reject = False" >> /etc/postfix-policyd-spf-python/policyd-spf.conf && \
+    echo "Mail_From_reject = False" >> /etc/postfix-policyd-spf-python/policyd-spf.conf
+ 
+RUN echo "policyd-spf  unix  -       n       n       -       0       spawn" >> /etc/postfix/master.cf && \
+    echo "  user=policyd-spf argv=/usr/bin/policyd-spf" >> /etc/postfix/master.cf && \
+    echo "smtpd_recipient_restrictions = " >> /etc/postfix/main.cf && \
+    echo "  check_policy_service unix:private/policyd-spf" >> /etc/postfix/main.cf 

@@ -1,0 +1,14 @@
+FROM smtp-book-postfix:latest
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    rspamd redis-server sudo && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r rspamd && useradd -r -g rspamd rspamd
+
+RUN mkdir -p /run/rspamd /var/log/rspamd /var/lib/rspamd && \
+    chown rspamd:rspamd -R /var/log/rspamd /var/lib/rspamd /run/rspamd /etc/rspamd
+
+COPY ./rspamd/local.d/*    /etc/rspamd/local.d/
+#COPY ./rspamd/override.d/* /etc/rspamd/override.d/
