@@ -1,6 +1,0 @@
-FROM smtp-book-base:latest
-
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-    unbound unbound-anchor  && \
-    rm -rf /var/lib/apt/lists/*

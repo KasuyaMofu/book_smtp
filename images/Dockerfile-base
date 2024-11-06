@@ -1,0 +1,12 @@
+FROM ubuntu:24.04
+
+## package setup
+# -e 's/main universe restricted multiverse/main/' \
+RUN sed -i -e 's/^URIs:.*/URIs: http:\/\/ftp.riken.go.jp\/Linux\/ubuntu\//g' /etc/apt/sources.list.d/ubuntu.sources
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    dnsutils iputils-ping vim iproute2 telnet tcpdump less sudo tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV TZ Asia/Tokyo

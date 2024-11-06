@@ -1,0 +1,152 @@
+services:
+  dns:
+    container_name: dns
+    build:
+      context: ./docker/dns
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.254
+
+  a-client:
+    container_name: a-client
+    dns: 10.200.0.254
+    build:
+      context: ./docker/client
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.5
+
+  a-imap:
+    container_name: a-imap
+    dns: 10.200.0.254
+    build:
+      context: ./docker/imap
+      args:
+        HOSTNAME: imap.a.test
+        DOMAIN: a.test
+        FORWARD_TO: null
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.8
+
+  a-smtp-plain:
+    container_name: a-smtp-plain
+    dns: 10.200.0.254
+    build:
+      context: ./docker/smtp-plain
+      args:
+        HOSTNAME: plain.smtp.a.test
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.50
+
+  a-smtp-dkim:
+    container_name: a-smtp-dkim
+    dns: 10.200.0.254
+    build:
+      context: ./docker/smtp-rspamd
+      args:
+        HOSTNAME: dkim.smtp.a.test
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.60
+
+  b-mx:
+    container_name: b-mx
+    dns: 10.200.0.254
+    build:
+      context: ./docker/mx-plain
+      args:
+        HOSTNAME:  mx.b.test
+        RELAYHOST: imap.b.test
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.70
+
+  #TBD spf-dkim を使っているのでSPFオンリーの物に入れ替える
+  b-mx-spf:
+    container_name: b-mx-spf
+    dns: 10.200.0.254
+    build:
+      context: ./docker/mx-rspamd
+      dockerfile: Dockerfile
+      args:
+        HOSTNAME:  mx-spf.b.test
+        RELAYHOST: imap.b.test
+        ROLE: spf
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.71
+
+  b-mx-dkim:
+    container_name: b-mx-dkim
+    dns: 10.200.0.254
+    build:
+      context: ./docker/mx-rspamd
+      dockerfile: Dockerfile
+      args:
+        HOSTNAME:  mx-dkim.b.test
+        RELAYHOST: imap.b.test
+        ROLE: dkim
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.72
+
+  b-mx-dmarc:
+    container_name: b-mx-dmarc
+    dns: 10.200.0.254
+    build:
+      context: ./docker/mx-rspamd
+      dockerfile: Dockerfile
+      args:
+        HOSTNAME:  mx-dmarc.b.test
+        RELAYHOST: imap.b.test
+        ROLE: dmarc
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.73
+
+  b-imap:
+    container_name: b-imap
+    dns: 10.200.0.254
+    build:
+      context: ./docker/imap
+      args:
+        HOSTNAME: imap.b.test
+        DOMAIN: b.test
+        FORWARD_TO: c.test
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.20
+
+  c-mx:
+    container_name: c-mx
+    dns: 10.200.0.254
+    build:
+      context: ./docker/mx-plain
+      args:
+        HOSTNAME:  mx.c.test
+        RELAYHOST: imap.c.test
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.80
+
+  c-imap:
+    container_name: c-imap
+    dns: 10.200.0.254
+    build:
+      context: ./docker/imap
+      args:
+        HOSTNAME: imap.c.test
+        DOMAIN: c.test
+        FORWARD_TO: null
+    networks:
+      localnet:
+        ipv4_address: 10.200.0.81
+
+networks:
+  localnet:
+    enable_ipv6: false
+    ipam:
+      config:
+        - subnet: 10.200.0.0/16

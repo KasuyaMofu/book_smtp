@@ -1,0 +1,38 @@
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile-base
+    image: kasuyamofu/smtpbook-base:latest
+
+  postfix:
+    build:
+      context: .
+      dockerfile: Dockerfile-postfix
+    depends_on: 
+      - base
+    image: kasuyamofu/smtpbook-postfix:latest
+
+  dovecot:
+    build:
+      context: .
+      dockerfile: Dockerfile-dovecot
+    depends_on: 
+      - postfix
+    image: kasuyamofu/smtpbook-dovecot:latest
+
+  unbound:
+    build:
+      context: .
+      dockerfile: Dockerfile-unbound
+    depends_on: 
+      - base
+    image: kasuyamofu/smtpbook-unbound:latest
+
+  rspamd:
+    build:
+      context: .
+      dockerfile: Dockerfile-rspamd
+    depends_on: 
+      - postfix
+    image: kasuyamofu/smtpbook-rspamd:latest

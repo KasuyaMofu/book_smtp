@@ -1,0 +1,22 @@
+FROM kasuyamofu/smtpbook-postfix:latest
+
+RUN export DEBIAN_FRONTEND="noninteractive" && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y \
+    dovecot-core dovecot-imapd && \
+    rm -rf /var/lib/apt/lists/*
+
+## user settings
+## user1:user1 user2:user2
+RUN useradd -s /sbin/nologin -m user1 && \
+    useradd -s /sbin/nologin -m user2 && \
+    sed -i -e "/user[1-2]/d" /etc/shadow && \
+    echo 'user1:$y$j9T$af58xeE18qixRYVn/7y7o/$Q3wjPYoDWUdQ.e5IVNJT5BZlSu2NL.MJ.HPPi5iS3K7:20018:0:99999:7:::' >> /etc/shadow && \
+    echo 'user2:$y$j9T$e9.S8h1DEkvpQJhEnB1rv.$kvSz.rCOpvXHUFIAxvQA5y3qOsaPAPBUjKqw5H.jQmC:20018:0:99999:7:::' >> /etc/shadow
+
+## dovecot settings
+RUN sed -i -e "/mail_location/d" /etc/dovecot/dovecot.conf && \
+    echo "mail_location = maildir:~/Maildir" >> /etc/dovecot/dovecot.conf && \
+    echo "disable_plaintext_auth = no" >> /etc/dovecot/conf.d/10-auth.conf && \
+    echo "listen = *" >> /etc/dovecot/dovecot.conf && \ 
+    echo "protocols = imap" >> /etc/dovecot/dovecot.conf

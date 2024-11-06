@@ -1,0 +1,18 @@
+FROM kasuyamofu/smtpbook-postfix:latest
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    rspamd redis-server && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r rspamd && useradd -r -g rspamd rspamd 
+RUN mkdir -p /run/rspamd /var/log/rspamd /var/lib/rspamd && \
+    chown rspamd:rspamd -R /var/log/rspamd /var/lib/rspamd /run/rspamd /etc/rspamd
+
+COPY ./rspamd/local.d/* /etc/rspamd/local.d/
+COPY ./rspamd/override.d/* /etc/rspamd/override.d/
+
+RUN echo "smtpd_milters = inet:localhost:11332" >> /etc/postfix/main.cf && \
+    echo "non_smtpd_milters = inet:localhost:11332" >> /etc/postfix/main.cf && \
+    echo "milter_protocol = 6" >> /etc/postfix/main.cf && \
+    echo "milter_default_action = accept"
