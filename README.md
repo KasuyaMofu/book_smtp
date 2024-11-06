@@ -37,7 +37,7 @@ client.a.test     | メール送信テスト用のスクリプトが配置され
 
 サーバ名 | 備考
 -: | :-
-imap.b.test  | `b.test` に所属するメールは、このサーバにリレーされます。また、 `b.test` を指定した場合、
+imap.b.test  | `b.test` に所属するメールは、このサーバにリレーされます。
 spf.b.test   | SPFの検証を行うリレーサーバ
 dkim.b.test  | DKIM署名の検証を行うリレーサーバ
 dmarc.b.test | DMARCの検証を行うリレーサーバ
