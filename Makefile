@@ -1,4 +1,4 @@
-.PHONY: build base up down bash/client bash/b-imap bash/a-smtp-plain bash/a-smtp-dkim
+.PHONY: build-all up down build scenario1 scenario2 scenario3 scenario4 
 
 build-all:
 	cd images && docker compose build && cd .. && docker compose build
@@ -9,16 +9,16 @@ down:
 build:
 	docker compose build
 
-senario1/up:
+scenario1/up:
 	docker compose up dns a-client a-smtp-plain b-imap
-senario1/send:
+scenario1/send:
 	docker compose exec a-client     /example/send.sh user1@a.test user1@imap.b.test plain.smtp.a.test
-senario1/check:
+scenario1/check:
 	docker compose exec b-imap /example/receive.sh user1
-senario2:
+scenario2:
 	docker compose up dns a-client a-smtp-plain b-mx-spf  b-imap
-senario3:
+scenario3:
 	docker compose up dns a-client a-smtp-dkim b-mx-dkim  b-imap
-senario4:
+scenario4:
 	docker compose up dns a-client a-smtp-dkim b-mx-dmarc b-imap
 
