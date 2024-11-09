@@ -1,11 +1,19 @@
 # SMTP本(仮称)
 
-## ビルド方法
+## 初期設定
 
-ベースのイメージをビルドする必要があります。一度だけ、以下のコマンドを実行してください。
+### ネットワークの指定
+
+compose.yaml は、 `/16` のネットワークを作成します。対象のネットワークを、 `.env` ファイルで指定してください。デフォルトでは、 `10.255.0.0/16` を示す `NETWORK=10.255` が設定されています。
+
+尚、 `.env` ファイルを更新した場合は、後述の make build を再度行ってください。
+
+### イメージのビルド
+
+イメージの作成のため、一度だけ、以下のコマンドを実行してください。
 
 ```
-make build-all
+make build
 ```
 
 ## 起動方法
@@ -15,7 +23,6 @@ make build-all
 ```
 make up
 ```
-
 
 ## サーバ構成
 
@@ -47,7 +54,7 @@ dmarc.b.test | DMARCの検証を行うリレーサーバ
 以下のようなコマンドを実行すると、それぞれのメール送信の様子を見ることができます。
 
 ```bash
-make build-all
+make build
 docker compose up -d dns a-client a-smtp-dkim b-mx-dmarc b-imap
 docker compose exec a-client /example/send.sh user1@a.test user1@dmarc.b.test dkim.smtp.a.test
 docker compose exec b-imap /example/receive.sh user1

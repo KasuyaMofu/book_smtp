@@ -17,4 +17,5 @@ inet_protocols = ipv4" >> /etc/postfix/main.cf && \
     chown postfix:postfix /var/mail /var/log/postfix &&\
     chmod 777 /var/mail
 
-RUN echo "nameserver 10.200.0.254" > /var/spool/postfix/etc/resolv.conf
+ARG NETWORK
+RUN echo "nameserver ${NETWORK}.0.254" > /var/spool/postfix/etc/resolv.conf

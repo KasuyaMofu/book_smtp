@@ -1,1 +1,1 @@
-local_addrs = [10.200.0.0/16];
+local_addrs = [_NETWORK.0.0/16];
