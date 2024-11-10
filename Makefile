@@ -20,7 +20,7 @@ view:
 
 ## 1hop(client -> imap)
 scenario1/up:
-	docker compose up -d dns a-client b-imap
+	docker compose up dns a-client b-imap
 scenario1/send:
 	docker compose exec a-client /send.sh user1@a.test    user1@imap.b.test  scenario1 imap.b.test
 
