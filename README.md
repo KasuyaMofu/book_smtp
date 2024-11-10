@@ -116,10 +116,10 @@ make view
 
 ```
 $ make scenario6/send 
-docker compose exec a-client     /send.sh user1@a.test user1@dmarc.b.test scenario6 dkim.smtp.a.test
+docker compose exec a-client /send.sh user1@a.test    user1@dmarc.b.test scenario6 dkim.smtp.a.test
 # telnet dkim.smtp.a.test 25
 --------------------------
-Trying 10.255.1.31...
+Trying 10.255.1.21...
 Connected to dkim.smtp.a.test.
 Escape character is '^]'.
 220 dkim.smtp.a.test ESMTP Postfix
@@ -131,17 +131,16 @@ RCPT TO:   user1@dmarc.b.test
 250 2.1.5 Ok
 DATA
 354 End data with <CR><LF>.<CR><LF>
-Message-ID: <20241110102109.21196@a.test>
-Date: Sun, 10 Nov 2024 10:21:09 +0900
+Message-ID: <20241110123038.19624@a.test>
+Date: Sun, 10 Nov 2024 12:30:38 +0900
 From: user1@a.test
 To:   user1@dmarc.b.test
 Subject: scenario6 (mail from user1@a.test)
 
 Hello user1@dmarc.b.test!
 .
-250 2.0.0 Ok: queued as 54A75383EDB
+250 2.0.0 Ok: queued as 396E73840F1
 QUIT
-221 2.0.0 Bye
 Connection closed by foreign host.
 --------------------------
 ```
@@ -151,36 +150,36 @@ Connection closed by foreign host.
 ※ POP3 接続や IMAP 接続は行わないため、表示した対象のメールは `cur/` への移動は行われません。
 
 ```
-$ make view
+$ make view 
 docker compose exec b-imap /view.sh user1
 --------------------------
 Return-Path: <user1@a.test>
 X-Original-To: user1@dmarc.b.test
 Delivered-To: user1@dmarc.b.test
-Received: from dmarc.mx.b.test (dmarc.mx.b.test [10.255.2.23])
-        by imap.b.test (Postfix) with ESMTPS id 85782383EDB
-        for <user1@dmarc.b.test>; Sun, 10 Nov 2024 10:21:10 +0900 (JST)
-Received: from dkim.smtp.a.test (dkim.smtp.a.test [10.255.1.31])
-        by dmarc.mx.b.test (Postfix) with ESMTPS id 67106383F0C
-        for <user1@dmarc.b.test>; Sun, 10 Nov 2024 10:21:10 +0900 (JST)
+Received: from dmarc.mx.b.test (dmarc.mx.b.test [10.255.2.33])
+        by imap.b.test (Postfix) with ESMTPS id 94F133840F1
+        for <user1@dmarc.b.test>; Sun, 10 Nov 2024 12:30:39 +0900 (JST)
+Received: from dkim.smtp.a.test (dkim.smtp.a.test [10.255.1.21])
+        by dmarc.mx.b.test (Postfix) with ESMTPS id 5A5473840F9
+        for <user1@dmarc.b.test>; Sun, 10 Nov 2024 12:30:39 +0900 (JST)
 Authentication-Results: dmarc.mx.b.test;
-        dkim=pass header.d=a.test header.s=smtpbook header.b=dKW1yg9G;
-        dmarc=pass (policy=quarantine) header.from=a.test;
-        spf=pass (dmarc.mx.b.test: domain of user1@a.test designates 10.255.1.31 as permitted sender) smtp.mailfrom=user1@a.test
-Received: from a.test (client.a.test [10.255.1.1])
-        by dkim.smtp.a.test (Postfix) with SMTP id 54A75383EDB
-        for <user1@dmarc.b.test>; Sun, 10 Nov 2024 10:21:09 +0900 (JST)
+        dkim=pass header.d=a.test header.s=smtpbook header.b=Uhayoaz1;
+        spf=pass (dmarc.mx.b.test: domain of user1@a.test designates 10.255.1.21 as permitted sender) smtp.mailfrom=user1@a.test;
+        dmarc=pass (policy=quarantine) header.from=a.test
+Received: from a.test (client.a.test [10.255.1.10])
+        by dkim.smtp.a.test (Postfix) with SMTP id 396E73840F1
+        for <user1@dmarc.b.test>; Sun, 10 Nov 2024 12:30:38 +0900 (JST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=a.test; s=smtpbook;
-        t=1731201670;
+        t=1731209439;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc; bh=4O5lFigIhxLU8If/5QjKchggSnc7Yxld80E41+l39XE=;
-        b=dKW1yg9Gn1Z+3bOVDJxNaMgaXW0Vlx7zeWl6BKljDj3NGXXgO2v1RjuXYr7uBTEnzpcfSq
-        Tomb7l4PB+CESru4B3lmCxg13digQD8jYZtEKWjisrm5K/ysE0hvQ477DR2tz/DYEauEcT
-        t0VcYDsxYLpjZkY+Fi7HYxVwqzhIgiRjEsOd3n/TkMnKZ8FW0X7oqUhkgl1/Oq7aq5I0Au
-        WWoYui38Tmz+uR1HqjERy8CvHSveOdbC/w67XA8kJk3umN5YTbOGXdYBka7SRoPX4zv5p3
-        +n/9wGxrdM3z8KPtTjx+ohsAHBt5vzrJLTVyLu/trQlLUBwveOgBpj0LNEfjtg==
-Message-ID: <20241110102109.21196@a.test>
-Date: Sun, 10 Nov 2024 10:21:09 +0900
+        b=Uhayoaz1mxKEBVSu0O5JFHjZbu/3m65uDlf1azcOrNkX7oRc8U4o1F7DrX+ChFwlJ3tpCx
+        XmXflGmBbQ5yFo9qMzhxhs9W6pzt90WY/qfwp4ryj5DRPtgGFLc6g4mCpxw5FgYPr/FH2y
+        yTQJ6T4F8f5BnkbKlKx5YzV1M3XSRbHrQZ3tVxEtRUfopj/ocw0wipY1Fx4Y9nyI7hdgB6
+        gfe4dPwN6BLeJebK1QYogpaVp6VwKSyycKk33MWETEAH1XWg74+Lzln0se2yICEgf/Kb+R
+        /5IYKirGQc8c3kzCqU+hORdlX4Xq+tsefmvWz2LWPQJ1l3Ukh4WDRDWy1lR0WA==
+Message-ID: <20241110123038.19624@a.test>
+Date: Sun, 10 Nov 2024 12:30:38 +0900
 From: user1@a.test
 To:   user1@dmarc.b.test
 Subject: scenario6 (mail from user1@a.test)
@@ -196,40 +195,42 @@ Hello user1@dmarc.b.test!
 メールのヘッダーだけでなく、DNSへの問い合わせ、postfixのログから、さらに理解を深められるようにできています。
 
 ```
-dns           | Nov 10 10:21:09 unbound[7:0] info: 10.255.1.1 dkim.smtp.a.test. AAAA IN
-dns           | Nov 10 10:21:09 unbound[7:0] info: 10.255.1.1 dkim.smtp.a.test. A IN
-dns           | Nov 10 10:21:09 unbound[7:0] info: 10.255.1.31 1.1.255.10.in-addr.arpa. PTR IN
-dns           | Nov 10 10:21:09 unbound[7:0] info: 10.255.1.31 client.a.test. A IN
-dns           | Nov 10 10:21:09 unbound[7:0] info: 10.255.1.31 localhost. A IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.1.31 dmarc.b.test. MX IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.1.31 dmarc.mx.b.test. A IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.23 31.1.255.10.in-addr.arpa. PTR IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.23 dkim.smtp.a.test. A IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.23 localhost. A IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.23 _dmarc.a.test. TXT IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.23 imap.b.test. MX IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.23 imap.b.test. A IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.10 23.2.255.10.in-addr.arpa. PTR IN
-dns           | Nov 10 10:21:10 unbound[7:0] info: 10.255.2.10 dmarc.mx.b.test. A IN
-a-smtp-dkim   | Nov 10 10:21:09 dkim postfix/smtpd[122]: connect from client.a.test[10.255.1.1]
-a-smtp-dkim   | Nov 10 10:21:09 dkim postfix/smtpd[122]: 54A75383EDB: client=client.a.test[10.255.1.1]
-a-smtp-dkim   | Nov 10 10:21:10 dkim postfix/cleanup[126]: 54A75383EDB: message-id=<20241110102109.21196@a.test>
-a-smtp-dkim   | Nov 10 10:21:10 dkim postfix/qmgr[114]: 54A75383EDB: from=<user1@a.test>, size=411, nrcpt=1 (queue active)
-a-smtp-dkim   | Nov 10 10:21:10 dkim postfix/smtpd[122]: disconnect from client.a.test[10.255.1.1] helo=1 mail=1 rcpt=1 data=1 quit=1 commands=5
-a-smtp-dkim   | Nov 10 10:21:10 dkim postfix/smtp[127]: 54A75383EDB: to=<user1@dmarc.b.test>, relay=dmarc.mx.b.test[10.255.2.23]:25, delay=1.2, delays=1.1/0.02/0.08/0.07, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as 67106383F0C)
-a-smtp-dkim   | Nov 10 10:21:10 dkim postfix/qmgr[114]: 54A75383EDB: removed
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/smtpd[122]: connect from dkim.smtp.a.test[10.255.1.31]
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/smtpd[122]: 67106383F0C: client=dkim.smtp.a.test[10.255.1.31]
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/cleanup[126]: 67106383F0C: message-id=<20241110102109.21196@a.test>
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/smtpd[122]: disconnect from dkim.smtp.a.test[10.255.1.31] ehlo=2 starttls=1 mail=1 rcpt=1 data=1 quit=1 commands=7
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/qmgr[113]: 67106383F0C: from=<user1@a.test>, size=1189, nrcpt=1 (queue active)
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/smtp[127]: 67106383F0C: to=<user1@dmarc.b.test>, relay=imap.b.test[10.255.2.10]:25, delay=0.14, delays=0.06/0.02/0.04/0.02, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as 85782383EDB)
-b-mx-dmarc    | Nov 10 10:21:10 dmarc postfix/qmgr[113]: 67106383F0C: removed
-b-imap        | Nov 10 10:21:10 imap postfix/smtpd[123]: connect from dmarc.mx.b.test[10.255.2.23]
-b-imap        | Nov 10 10:21:10 imap postfix/smtpd[123]: 85782383EDB: client=dmarc.mx.b.test[10.255.2.23]
-b-imap        | Nov 10 10:21:10 imap postfix/cleanup[127]: 85782383EDB: message-id=<20241110102109.21196@a.test>
-b-imap        | Nov 10 10:21:10 imap postfix/smtpd[123]: disconnect from dmarc.mx.b.test[10.255.2.23] ehlo=2 starttls=1 mail=1 rcpt=1 data=1 quit=1 commands=7
-b-imap        | Nov 10 10:21:10 imap postfix/qmgr[104]: 85782383EDB: from=<user1@a.test>, size=1622, nrcpt=1 (queue active)
-b-imap        | Nov 10 10:21:10 imap postfix/local[128]: 85782383EDB: to=<user1@dmarc.b.test>, relay=local, delay=0.02, delays=0.01/0.01/0/0, dsn=2.0.0, status=sent (delivered to maildir)
-b-imap        | Nov 10 10:21:10 imap postfix/qmgr[104]: 85782383EDB: removed
+dns           | Nov 10 12:30:37 unbound[6:0] info: 10.255.1.10 dkim.smtp.a.test. AAAA IN
+dns           | Nov 10 12:30:37 unbound[6:0] info: 10.255.1.10 dkim.smtp.a.test. A IN
+dns           | Nov 10 12:30:37 unbound[6:0] info: 10.255.1.21 10.1.255.10.in-addr.arpa. PTR IN
+dns           | Nov 10 12:30:37 unbound[6:0] info: 10.255.1.21 client.a.test. A IN
+dns           | Nov 10 12:30:37 unbound[6:0] info: 10.255.1.21 localhost. A IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.1.21 dmarc.b.test. MX IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.1.21 dmarc.mx.b.test. A IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 21.1.255.10.in-addr.arpa. PTR IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 dkim.smtp.a.test. A IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 localhost. A IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 a.test. TXT IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 smtpbook._domainkey.a.test. TXT IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 _dmarc.a.test. TXT IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 imap.b.test. MX IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.33 imap.b.test. A IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.40 33.2.255.10.in-addr.arpa. PTR IN
+dns           | Nov 10 12:30:39 unbound[6:0] info: 10.255.2.40 dmarc.mx.b.test. A IN
+a-smtp-dkim   | Nov 10 12:30:37 dkim postfix/smtpd[108]: connect from client.a.test[10.255.1.10]
+a-smtp-dkim   | Nov 10 12:30:38 dkim postfix/smtpd[108]: 396E73840F1: client=client.a.test[10.255.1.10]
+a-smtp-dkim   | Nov 10 12:30:39 dkim postfix/cleanup[112]: 396E73840F1: message-id=<20241110123038.19624@a.test>
+a-smtp-dkim   | Nov 10 12:30:39 dkim postfix/qmgr[105]: 396E73840F1: from=<user1@a.test>, size=412, nrcpt=1 (queue active)
+a-smtp-dkim   | Nov 10 12:30:39 dkim postfix/smtpd[108]: disconnect from client.a.test[10.255.1.10] helo=1 mail=1 rcpt=1 data=1 quit=1 commands=5
+a-smtp-dkim   | Nov 10 12:30:39 dkim postfix/smtp[113]: 396E73840F1: to=<user1@dmarc.b.test>, relay=dmarc.mx.b.test[10.255.2.33]:25, delay=1.4, delays=1.1/0.02/0.05/0.17, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as 5A5473840F9)
+a-smtp-dkim   | Nov 10 12:30:39 dkim postfix/qmgr[105]: 396E73840F1: removed
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/smtpd[108]: connect from dkim.smtp.a.test[10.255.1.21]
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/smtpd[108]: 5A5473840F9: client=dkim.smtp.a.test[10.255.1.21]
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/cleanup[112]: 5A5473840F9: message-id=<20241110123038.19624@a.test>
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/qmgr[106]: 5A5473840F9: from=<user1@a.test>, size=1190, nrcpt=1 (queue active)
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/smtpd[108]: disconnect from dkim.smtp.a.test[10.255.1.21] ehlo=2 starttls=1 mail=1 rcpt=1 data=1 quit=1 commands=7
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/smtp[113]: 5A5473840F9: to=<user1@dmarc.b.test>, relay=imap.b.test[10.255.2.40]:25, delay=0.25, delays=0.16/0.02/0.05/0.02, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as 94F133840F1)
+b-mx-dmarc    | Nov 10 12:30:39 dmarc postfix/qmgr[106]: 5A5473840F9: removed
+b-imap        | Nov 10 12:30:39 imap postfix/smtpd[99]: connect from dmarc.mx.b.test[10.255.2.33]
+b-imap        | Nov 10 12:30:39 imap postfix/smtpd[99]: 94F133840F1: client=dmarc.mx.b.test[10.255.2.33]
+b-imap        | Nov 10 12:30:39 imap postfix/cleanup[103]: 94F133840F1: message-id=<20241110123038.19624@a.test>
+b-imap        | Nov 10 12:30:39 imap postfix/smtpd[99]: disconnect from dmarc.mx.b.test[10.255.2.33] ehlo=2 starttls=1 mail=1 rcpt=1 data=1 quit=1 commands=7
+b-imap        | Nov 10 12:30:39 imap postfix/qmgr[97]: 94F133840F1: from=<user1@a.test>, size=1623, nrcpt=1 (queue active)
+b-imap        | Nov 10 12:30:39 imap postfix/local[104]: 94F133840F1: to=<user1@dmarc.b.test>, relay=local, delay=0.02, delays=0.01/0.01/0/0, dsn=2.0.0, status=sent (delivered to maildir)
+b-imap        | Nov 10 12:30:39 imap postfix/qmgr[97]: 94F133840F1: removed
 ```
