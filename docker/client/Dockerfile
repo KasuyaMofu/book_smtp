@@ -1,4 +1,4 @@
 FROM kasuyamofu/smtpbook-base:latest
 
-COPY ./example /example
+COPY ./example/* /
 ENTRYPOINT ["sleep","infinity"]

@@ -14,7 +14,7 @@ RUN DOMAIN=`echo ${HOSTNAME} | sed -E 's/.*\.([^.]+\.[^.]+)$/\1/'` && \
     echo '"|/usr/sbin/sendmail -f user2+forward@'"${DOMAIN}"' user2@'"${FORWARD_TO}"'"' >> /home/user2/.forward \
     ; fi
 
-COPY ./example /example
+COPY ./example/* /
 COPY ./entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 143/TCP
