@@ -82,7 +82,7 @@ dkim.smtp.a.test  | .1.21 | DKIM署名を行うSMTPサーバ。セレクタは `
 また、以下のTXTレコードを設定しています。
 
 ドメイン | レコード 
--: | :- | :-
+-: | :-
 a.test                     |  `"v=spf1 ip4:_NETWORK.1.30/31 -all"` 
 fail.a.test                |  `"v=spf1 ip4:_NETWORK.255.30/31 -all"` 
 smtpbook._domainkey.a.test |  `"v=DKIM1; k=rsa; " "p=MIIBIjAN(省略)QIDAQAB"`
