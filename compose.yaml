@@ -19,17 +19,6 @@ services:
       context: ./docker/client
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.1.1
-
-  a-imap:
-    <<: *dns
-    container_name: a-imap
-    build:
-      context: ./docker/imap
-      args:
-        HOSTNAME: imap.a.test
-    networks:
-      localnet:
         ipv4_address: ${NETWORK}.1.10
 
   a-smtp-plain:
@@ -41,7 +30,7 @@ services:
         HOSTNAME: plain.smtp.a.test
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.1.30
+        ipv4_address: ${NETWORK}.1.20
 
   a-smtp-dkim:
     <<: *dns
@@ -53,7 +42,7 @@ services:
         NETWORK: ${NETWORK}
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.1.31
+        ipv4_address: ${NETWORK}.1.21
 
   b-imap:
     <<: *dns
@@ -65,7 +54,7 @@ services:
         DOMAIN: b.test
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.2.10
+        ipv4_address: ${NETWORK}.2.40
 
   b-mx:
     <<: *dns
@@ -77,7 +66,7 @@ services:
         RELAYHOST: imap.b.test
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.2.20
+        ipv4_address: ${NETWORK}.2.30
 
   b-mx-spf:
     <<: *dns
@@ -91,7 +80,7 @@ services:
         ROLE: spf
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.2.21
+        ipv4_address: ${NETWORK}.2.31
 
   b-mx-dkim:
     <<: *dns
@@ -105,7 +94,7 @@ services:
         ROLE: dkim
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.2.22
+        ipv4_address: ${NETWORK}.2.32
 
   b-mx-dmarc:
     <<: *dns
@@ -119,7 +108,7 @@ services:
         ROLE: dmarc
     networks:
       localnet:
-        ipv4_address: ${NETWORK}.2.23
+        ipv4_address: ${NETWORK}.2.33
 
 networks:
   localnet:
