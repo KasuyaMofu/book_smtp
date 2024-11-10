@@ -30,9 +30,9 @@ make up を実行すると、以下の図のネットワークが構成されま
 
 ```mermaid
 graph LR
-    a-client[client.a.test<br>10.255.1.1]
-    a-smtp-plain[plain.smtp.a.test<br>10.255.1.10]
-    a-smtp-dkim[dkim.smtp.a.test<br>10.255.1.11]
+    a-client[client.a.test<br>10.255.1.10]
+    a-smtp-plain[plain.smtp.a.test<br>10.255.1.20]
+    a-smtp-dkim[dkim.smtp.a.test<br>10.255.1.21]
 
     b-mx-plain[plain.mx.b.test<br>10.255.2.30]
     b-mx-spf[spf.mx.b.test<br>10.255.2.31]
