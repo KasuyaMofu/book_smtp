@@ -1,4 +1,4 @@
-.PHONY: build-all up down stop view build kill
+.PHONY: up down stop view build kill build build/* scenario*/*
 
 build/images:
 	cd images && docker compose --env-file ../.env build && cd ..
@@ -14,57 +14,55 @@ stop:
 	docker compose stop
 kill:
 	docker compose kill
-
+rebuild:
+	docker compose kill ${TARGET} && docker compose down ${TARGET} && docker compose build ${TARGET} && docker compose up -d ${TARGET} 
 view:
 	docker compose exec b-imap /view.sh user1
 
+log/a-smtp-dkim/rspamd:
+	docker compose exec a-smtp-dkim tail -n 0 -f /var/log/rspamd/rspamd.log
+
+log/b-mx-dkim/rspamd:
+	docker compose exec b-mx-dkim tail -n 0 -f /var/log/rspamd/rspamd.log
+
+
+##                                        subject     From                       To                  SMTP sever         (option) Envelope-From
 ## 1hop(client -> imap)
-scenario1/up:
-	docker compose up dns a-client b-imap
-scenario1/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@imap.b.test  scenario1 imap.b.test
+scenario1-1/send:
+	docker compose exec a-client /send.sh scenario1-1 user1@a.test               user1@b.test        imap.b.test
 
 ## add MTA(relay) servers (client -> smtp -> mx -> imap)
-scenario2/up:
-	docker compose up dns a-client a-smtp-plain b-mx b-imap
-scenario2/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@b.test       scenario2 plain.smtp.a.test
+scenario1-2/send:
+	docker compose exec a-client /send.sh scenario1-2 user1@a.test               user1@b.test        plain.smtp.a.test
 
 ## SPF check
-scenario3/up:
-	docker compose up dns a-client a-smtp-plain b-mx-spf  b-imap
-scenario3/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@spf.b.test   scenario3 plain.smtp.a.test
+scenario2-1/send:
+	docker compose exec a-client /send.sh scenario2-1 user1@a.test               user1@spf.b.test    plain.smtp.a.test
 
 ## SPF fail
-scenario4/up:
-	docker compose up dns a-client b-mx-spf  b-imap
-scenario4/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@dmarc.b.test scenario4 spf.mx.b.test
+scenario2-2/send:
+	docker compose exec a-client /send.sh scenario2-2 user1@a.test               user1@spf.b.test    plain.smtp.x.test
 
 ## DKIM signed and verified
-scenario5/up:
-	docker compose up dns a-client a-smtp-dkim b-mx-dkim  b-imap
-scenario5/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@dkim.b.test  scenario5 dkim.smtp.a.test
+scenario3-1/send:
+	docker compose exec a-client /send.sh scenario3-1 user1@pass.dkim.a.test    user1@dkim.b.test    dkim.smtp.a.test
 
-## dmarc=pass(dkim=pass, spf=pass, SPF/DKIM aligned)
-scenario6/up:
-	docker compose up dns a-client a-smtp-dkim b-mx-dmarc b-imap
-scenario6/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@dmarc.b.test scenario6 dkim.smtp.a.test
+## DKIM signed but fail (wrong DKIM record on DNS)
+scenario3-2/send:
+	docker compose exec a-client /send.sh scenario3-2 user1@fail.dkim.a.test    user1@dkim.b.test    dkim.smtp.a.test
 
-## dmarc=pass(dkim=pass, spf=fail, SPF not aligned)
-scenario7/up: scenario6/up
-scenario7/send:
-	docker compose exec a-client /send.sh user1@a.test    user1@dmarc.b.test scenario7 dkim.smtp.a.test user1@fail.a.test
+## dmarc=pass(spf=pass, SPF aligned,      dkim=pass, DKIM aligned)
+scenario4-1/send:
+	docker compose exec a-client /send.sh scenario4-1 user1@pass.dkim.a.test    user1@dmarc.b.test   dkim.smtp.a.test
 
-## dmarc=pass(dkim=pass, spf=pass, DKIM not aligned)
-scenario8/up: scenario6/up
-scenario8/send:
-	docker compose exec a-client /send.sh user1@ex.x.test user1@dmarc.b.test scenario8 dkim.smtp.a.test user1@ex.x.test
+## dmarc=pass(spf=pass, SPF aligned,      dkim=fail)
+scenario4-2/send:
+	docker compose exec a-client /send.sh scenario4-2 user1@fail.dkim.a.test    user1@dmarc.b.test   dkim.smtp.a.test
 
-## dmarc=fail(dkim=pass, spf=pass, SPF/DKIM not aligned)
-scenario9/up: scenario6/up
-scenario9/send:
-	docker compose exec a-client /send.sh user1@x.test    user1@dmarc.b.test scenario9 dkim.smtp.a.test user1@a.test
+## dmarc=pass(spf=fail,                   dkim=pass, DKIM aligned)
+scenario4-3/send:
+	docker compose exec a-client /send.sh scenario4-3 user1@pass.dkim.a.test    user1@dmarc.b.test   dkim.smtp.x.test
+
+## dmarc=fail(spf=pass, SPF not aligned,  dkim=pass, DKIM not aligned)
+scenario4-4/send:
+	docker compose exec a-client /send.sh scenario4-4 user1@x.test              user1@dmarc.b.test   dkim.smtp.a.test      user1@a.test

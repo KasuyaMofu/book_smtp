@@ -12,6 +12,9 @@ RUN mkdir -p /run/rspamd /var/log/rspamd /var/lib/rspamd && \
 COPY ./rspamd/local.d/* /etc/rspamd/local.d/
 COPY ./rspamd/override.d/* /etc/rspamd/override.d/
 
+## for only .test domain and faster boot
+RUN echo "test" > /usr/share/rspamd/effective_tld_names.dat
+
 RUN echo "smtpd_milters = inet:localhost:11332" >> /etc/postfix/main.cf && \
     echo "non_smtpd_milters = inet:localhost:11332" >> /etc/postfix/main.cf && \
     echo "milter_protocol = 6" >> /etc/postfix/main.cf && \

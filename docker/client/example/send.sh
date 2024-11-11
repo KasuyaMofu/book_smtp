@@ -4,10 +4,10 @@ if [ -z "${4}" ]; then
   echo "Usage: <from> <to> <title> <smtp_server> [envelope_from]"
   exit 1
 else
-  FROM=${1}
+  TITLE=${1}
+  FROM=${2}
   FROM_DOMAIN=`echo ${FROM} | awk -F@ '{print $2}'`
-  TO=${2}
-  TITLE=${3}
+  TO=${3}
   SMTP_SERVER=${4}
 fi
 

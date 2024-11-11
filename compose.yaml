@@ -11,7 +11,8 @@ services:
     networks:
       localnet:
         ipv4_address: ${NETWORK}.0.254
-        
+
+## a.test      
   a-client:
     <<: *dns
     container_name: a-client
@@ -44,6 +45,7 @@ services:
       localnet:
         ipv4_address: ${NETWORK}.1.21
 
+## b.test
   b-imap:
     <<: *dns
     container_name: b-imap
@@ -109,6 +111,30 @@ services:
     networks:
       localnet:
         ipv4_address: ${NETWORK}.2.33
+
+## x.test
+  x-smtp-plain:
+    <<: *dns
+    container_name: x-smtp-plain
+    build:
+      context: ./docker/smtp-plain
+      args:
+        HOSTNAME: plain.smtp.x.test
+    networks:
+      localnet:
+        ipv4_address: ${NETWORK}.24.20
+
+  x-smtp-dkim:
+    <<: *dns
+    container_name: x-smtp-dkim
+    build:
+      context: ./docker/smtp-rspamd
+      args:
+        HOSTNAME: dkim.smtp.x.test
+        NETWORK: ${NETWORK}
+    networks:
+      localnet:
+        ipv4_address: ${NETWORK}.24.21
 
 networks:
   localnet:
